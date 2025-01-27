@@ -12,10 +12,10 @@ interface Props {
 
 import { Badge } from '@/components/ui/badge'
 import { Column, Id, Task } from '@/types'
-import { useSortable } from '@dnd-kit/sortable'
+import { SortableContext, useSortable } from '@dnd-kit/sortable'
 import { Pencil, Trash2 } from 'lucide-react'
 import { CSS } from '@dnd-kit/utilities'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import TaskCard from './TaskCard'
@@ -23,6 +23,10 @@ import TaskCard from './TaskCard'
 function ColumnContainer(props: Props) {
     const { column, deleteColumn, updateColumn, createTask, tasks, deleteTask, updateTask} = props
     const [editMode, setEditMode] = useState(false)
+
+    const taskIds = useMemo(() => {
+        return tasks.map((task) => task.id)
+    }, [tasks])
 
 
 
@@ -76,9 +80,11 @@ function ColumnContainer(props: Props) {
                 <Trash2 onClick={() => deleteColumn(column.id)} className='text-white cursor-pointer hover:text-red-500' />
             </div>
             <div className='flex flex-grow flex-col gap-2 p-2 overflow-x-hidden overflow-y-auto'>
+                <SortableContext items={taskIds}> 
                 {tasks.map((task) => (
                     <TaskCard key={task.id} task={task} deleteTask={deleteTask} updateTask={updateTask} />
                 ))}
+                </SortableContext>
 
             </div>
 

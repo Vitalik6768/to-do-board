@@ -1,7 +1,9 @@
 import { Input } from '@/components/ui/input'
 import { Id, Task } from '@/types'
+import { useSortable } from '@dnd-kit/sortable'
 import { Trash2 } from 'lucide-react'
 import React, { useState } from 'react'
+import { CSS } from '@dnd-kit/utilities'
 
 
 interface Props {
@@ -21,9 +23,32 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
         setMouseOver(false)
     }
 
+    const { attributes, listeners, setNodeRef, transition, transform, isDragging } = useSortable(
+        {
+            id: task.id,
+            data: {
+                type: 'Task',
+                task
+            },
+            disabled: editMode,
+        })
+
+    const style = {
+        transition,
+        transform: CSS.Transform.toString(transform)
+    }
+
+    if (isDragging) {
+        return (<div ref={setNodeRef} style={style} className=' opacity-50 bg-slate-950 text-white p-2.5 rounded-md items-center flex text-left h-[100px] border-2 border-rose-500'></div>)
+
+    }
+
     if (editMode) {
         return (
             <div
+                ref={setNodeRef} style={style}
+                {...attributes}
+                {...listeners}
 
                 className='bg-slate-950 text-white p-2.5 rounded-md items-center flex text-left h-[100px] hover:ring-2 hover:ring-inset hover:ring-rose-500 cursor-grab relative justify-between'>
                 <Input
@@ -49,6 +74,9 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
 
     return (
         <div
+            ref={setNodeRef} style={style}
+            {...attributes}
+            {...listeners}
             onClick={toggleEditMode}
             onMouseEnter={() => setMouseOver(true)}
             onMouseLeave={() => setMouseOver(false)}
