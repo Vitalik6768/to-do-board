@@ -26,7 +26,12 @@ function KanbanBoard() {
     )
 
     return (
-        <div className='m-auto flex min-h-screen w-full items-center overflow-x-auto overflow-y-hidden px-[40px]'>
+        <>
+        
+        
+        <div className='m-auto flex w-full items-center overflow-x-auto overflow-y-hidden px-[40px]'>
+            
+
             <div className='m-auto flex gap-4'>
 
                 <DndContext
@@ -51,13 +56,7 @@ function KanbanBoard() {
                                 />)}
                         </SortableContext>
                     </div>
-                    <button
-                        onClick={() => CreateNewColumn()}
-                        className='h-[60px] w-[350px] min-w-[350px] cursor-pointer rounded-lg border-2 border-cyan-950 p-4 ring-2 ring-transparent hover:ring-2 hover:ring-rose-600 text-white flex gap-2'
-                    >
-                        <CirclePlus />
-                        Add Column
-                    </button>
+
 
                     {createPortal(
                         <DragOverlay>
@@ -84,10 +83,23 @@ function KanbanBoard() {
 
                     )
                     }
+
                 </DndContext>
 
             </div>
         </div>
+
+        <div className='text-white text-2xl font-bold px-4 py-2 justify-items-center mt-3'>
+        <button
+                onClick={() => CreateNewColumn()}
+                className='h-[60px] w-[350px] min-w-[350px] cursor-pointer rounded-lg border-2 border-cyan-950 p-4 ring-2 ring-transparent hover:ring-2 hover:ring-rose-600 text-white flex gap-2'
+            >
+                <CirclePlus />
+                Add Column
+            </button>
+
+        </div>
+        </>
     )
 
     function onDragOver(event: DragOverEvent) {
@@ -103,15 +115,15 @@ function KanbanBoard() {
         const isActiveTask = active.data.current?.type === 'Task'
         const isOverTask = over.data.current?.type === 'Task'
 
-        if (!isActiveTask)return
+        if (!isActiveTask) return
 
 
         if (isActiveTask && isOverTask) {
             setTasks((tasks) => {
                 const activeTaskIndex = tasks.findIndex(task => task.id === active.id)
                 const overTaskIndex = tasks.findIndex(task => task.id === over.id)
-                     
-                
+
+
                 tasks[activeTaskIndex].columnId = tasks[overTaskIndex].columnId
 
                 return arrayMove(tasks, activeTaskIndex, overTaskIndex)
@@ -120,14 +132,14 @@ function KanbanBoard() {
         }
 
         const isOverColumn = over.data.current?.type === 'Column'
-        if(isActiveTask && isOverColumn){
+        if (isActiveTask && isOverColumn) {
 
 
             setTasks((tasks) => {
                 const activeTaskIndex = tasks.findIndex(task => task.id === active.id)
                 const overTaskIndex = tasks.findIndex(task => task.id === over.id)
-                     
-                
+
+
                 tasks[activeTaskIndex].columnId = overColumnId
 
                 return arrayMove(tasks, activeTaskIndex, activeTaskIndex)
