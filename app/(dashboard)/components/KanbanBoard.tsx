@@ -2,12 +2,15 @@
 
 import { Column, Id, Task } from '@/types'
 import { CirclePlus } from 'lucide-react'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import ColumnContainer from './ColumnContainer'
 import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove, SortableContext } from '@dnd-kit/sortable'
 import { createPortal } from 'react-dom'
 import TaskCard from './TaskCard'
+import { useDebouncedCallback } from 'use-debounce';
+
+
 
 
 function KanbanBoard() {
@@ -16,6 +19,19 @@ function KanbanBoard() {
     const [activeColumnId, setActiveColumnId] = useState<Column | null>(null)
     const [tasks, setTasks] = useState<Task[]>([])
     const [activeTask, setActiveTask] = useState<Task | null>(null)
+    const [mounted, setMounted] = useState(false);
+
+    const debounced = useDebouncedCallback(
+        // function
+        (event) => {
+          console.log(event, columns)
+        },
+        // delay in ms
+        3000
+      );
+
+
+
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -24,6 +40,14 @@ function KanbanBoard() {
             }
         })
     )
+
+    useEffect(() => {
+        setMounted(true);
+
+    }, []);
+
+    // console.log(tasks)
+    // console.log(columns)
 
     return (
         <>
@@ -58,7 +82,7 @@ function KanbanBoard() {
                     </div>
 
 
-                    {createPortal(
+                    {mounted && createPortal(
                         <DragOverlay>
                             {activeColumnId && (<ColumnContainer
                                 column={activeColumnId}
@@ -134,7 +158,7 @@ function KanbanBoard() {
         const isOverColumn = over.data.current?.type === 'Column'
         if (isActiveTask && isOverColumn) {
 
-
+//debounced
             setTasks((tasks) => {
                 const activeTaskIndex = tasks.findIndex(task => task.id === active.id)
                 const overTaskIndex = tasks.findIndex(task => task.id === over.id)
@@ -157,6 +181,8 @@ function KanbanBoard() {
         setColumns(filteredColumns)
         const newTasks = tasks.filter(task => task.columnId !== id)
         setTasks(newTasks)
+        debounced('deleteColumn')
+
     }
 
     function updateColumn(id: Id, title: string) {
@@ -169,6 +195,7 @@ function KanbanBoard() {
         })
 
         setColumns(newColumns)
+        debounced('update columns')
 
 
     }
@@ -211,6 +238,7 @@ function KanbanBoard() {
         }
 
         setColumns([...columns, columnToAdd])
+        debounced('new Column')
     }
 
     function onDragStart(event: DragStartEvent) {
@@ -264,5 +292,7 @@ function generateId() {
 
 
 export default KanbanBoard
+
+
 
 
