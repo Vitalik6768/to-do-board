@@ -100,14 +100,10 @@ function KanbanBoard() {
                             )}
                             {activeTask && (<TaskCard task={activeTask} deleteTask={deleteTask} updateTask={updateTask} />)}
 
-
-
                         </DragOverlay>,
                         document.body
-
                     )
                     }
-
                 </DndContext>
 
             </div>
@@ -221,6 +217,8 @@ function KanbanBoard() {
         })
 
         setTasks(newTasks)
+        debounced('updateTask')
+
 
     }
 
@@ -273,25 +271,17 @@ function KanbanBoard() {
             })
         }
 
-
-
-
-
     }
 }
-
-
-
 
 function generateId() {
     return Math.floor(Math.random() * 1000000).toString();
 }
 
 
-
-
-
 export default KanbanBoard
+
+
 
 
 
